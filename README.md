@@ -135,5 +135,3 @@ UARTs
 
 ## Collaborators:
 
-1. [Nguyen Quang Nha](nhanq@vnu.edu.vn), VNU-UET
-2. [Dang Phuong Nam](phgnam1811.vn@gmail.com), NAIST
