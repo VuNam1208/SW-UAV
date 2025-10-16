@@ -95,7 +95,7 @@ os.makedirs(f"{SRC_DIR}/logs/stream_properties", exist_ok=True)
 
 # YOLO model paths for each UAV
 model_uav_paths = {
-    i: f"{SRC_DIR}/model/checkpoints/YOLO/25_3.pt"
+    i: f"{SRC_DIR}/model/checkpoints/YOLO/best.pt"
     for i in range(1, MAX_UAV_COUNT + 1)
 }
 

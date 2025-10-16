@@ -22,7 +22,7 @@ from config.stream_config import DEVICE, SRC_DIR
 from utils.model_utils import draw_detected_frame, draw_tracking_frame
 
 # Default configuration values
-DEFAULT_BUFFER_SIZE = 4
+DEFAULT_BUFFER_SIZE = 2
 DEFAULT_WRITER_CONFIG = {
     "enable": False,
     "filename": "output.mp4",
@@ -330,7 +330,7 @@ class StreamQtThread(QThread):
     """
     
     # Signal to update the UI with processed frames and results
-    change_image_signal = pyqtSignal(np.ndarray, np.ndarray, list)
+    change_image_signal = pyqtSignal(np.ndarray, list)
     
     def __init__(
         self, 
@@ -492,7 +492,7 @@ class StreamQtThread(QThread):
                 remaining_time = max(0, target_frame_time - elapsed_time)
                 
                 # if remaining_time > 0:
-                #     self.msleep(int(remaining_time))
+                self.msleep(int(10))
                 
                 # Write processed frame to video file if enabled
                 if self.stream.is_writer_opened():
@@ -507,7 +507,6 @@ class StreamQtThread(QThread):
                 
                 # Emit signal with frames and results
                 self.change_image_signal.emit(
-                    frame,
                     annotated_frame,
                     [self.uav_index, avg_fps, results],
                 )

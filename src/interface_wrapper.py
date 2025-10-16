@@ -2146,8 +2146,8 @@ class App(Map, StreamQtThread, Interface, QtWidgets.QWidget):
             logger.log(f"Failed to print status for UAV {uav_index}: {e}", level="error")
 
     # -----------------------------< UAVs streaming functions >-----------------------------
-    @pyqtSlot(np.ndarray, np.ndarray, list)
-    def stream_on_uav_screen(self, frame=None, annotated_frame=None, results=None) -> None:
+    @pyqtSlot(np.ndarray, list)
+    def stream_on_uav_screen(self, annotated_frame=None, results=None) -> None:
         """
         Display video stream on the UAV screen with optional object detection annotations.
         
@@ -2192,7 +2192,7 @@ class App(Map, StreamQtThread, Interface, QtWidgets.QWidget):
                 return
                 
             # Select the appropriate frame to display
-            streaming_frame = self._select_frame_type(uav_index, frame, annotated_frame)
+            streaming_frame = annotated_frame
             
             # Display the frame
             asyncio.create_task(self.update_uav_screen_view(
