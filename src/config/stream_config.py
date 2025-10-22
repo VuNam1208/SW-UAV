@@ -95,35 +95,7 @@ os.makedirs(f"{SRC_DIR}/logs/stream_properties", exist_ok=True)
 
 # YOLO model paths for each UAV
 model_uav_paths = {
-    i: f"{SRC_DIR}/model/checkpoints/YOLO/best.pt"
+    i: f"{SRC_DIR}/model/checkpoints/YOLO/25_3.pt"
     for i in range(1, MAX_UAV_COUNT + 1)
 }
 
-# Configuration validation
-def validate_config():
-    """
-    Validate configuration settings and return any issues found.
-    
-    Returns:
-        List of warning messages for potential configuration issues
-    """
-    warnings = []
-    
-    # Check if stream source exists
-    if DEFAULT_STREAM_SOURCE in ["videos", "streams"]:
-        for path in DEFAULT_STREAM_VIDEO_PATHS:
-            if not os.path.exists(path):
-                warnings.append(f"Warning: Stream source file not found: {path}")
-    
-    # Check if YOLO model files exist
-    for uav_index, model_path in model_uav_paths.items():
-        if not os.path.exists(model_path):
-            warnings.append(f"Warning: YOLO model file not found for UAV {uav_index}: {model_path}")
-    
-    return warnings
-
-
-# Run validation when module is imported
-config_warnings = validate_config()
-for warning in config_warnings:
-    print(warning)
