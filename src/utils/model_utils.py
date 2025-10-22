@@ -437,7 +437,7 @@ if __name__ == "__main__":
             results = model.track(
                 frame, 
                 persist=True,  # Maintain tracking IDs
-                conf=0.3,      # Confidence threshold
+                conf=0.7,      # Confidence threshold
                 iou=0.5,       # IoU threshold
                 device=device,
                 verbose=False

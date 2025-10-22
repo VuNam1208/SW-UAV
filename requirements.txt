@@ -39,5 +39,5 @@ colorlog
 geographiclib
 pyserial
 serial
-# xóa file log tại đường dẫn : ~/Downloads/SwarmUAV-UET-master25_3_2025/SwarmUAV-UET-master/dependencies/PX4-Autopilot/build/px4_sitl_default/rootfs/5$ 
+
 
