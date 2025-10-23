@@ -21,7 +21,7 @@ MODE = "real"  # Options: "simulation" or "real"
 connection_allows = [True, True, True, True, True, True]  # Allow connection to UAVs
 streaming_enables = [True, True, True, False, False, True]  # Enable video streams
 detection_enables = [True, True, True, False, False, False]  # Enable object detection
-recording_enables = [True, True, True, False, False, False]  # Enable video recording
+recording_enables = [False, False, False, False, False, False]  # Enable video recording
 
 # -------------------------------- UAV INDEXES AND POSITIONS --------------------------------
 # Available UAV indexes (1-based)

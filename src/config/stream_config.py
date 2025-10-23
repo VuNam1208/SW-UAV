@@ -24,7 +24,7 @@ ROOT_DIR = SRC_DIR.parent
 NOW = datetime.now().strftime("%y-%m-%d_%H-%M-%S")
 
 # Stream display configuration
-DEFAULT_STREAM_SCREEN = "general_screen"  # Options: "general_screen", "stream_screen", "ovv_screen", "all"
+DEFAULT_STREAM_SCREEN = "ovv_screen"  # Options: "general_screen", "stream_screen", "ovv_screen", "all"
 
 # Stream source configuration
 DEFAULT_STREAM_SOURCE = "videos"  # Options: "streams", "rtsp", "webcam", "videos"
