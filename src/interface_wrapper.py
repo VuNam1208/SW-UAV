@@ -909,8 +909,8 @@ class App(Map, StreamQtThread, Interface, QtWidgets.QWidget):
         await UAVs[uav_index]["system"].action.set_current_speed(3)
         
         try:
-            await UAVs[uav_index]["system"].param.set_param_float("RTL_RETURN_ALT", 10.0)
-            print(f"[INFO] UAV-{uav_index}: Đặt độ cao RTL thành 10m thành công")
+            await UAVs[uav_index]["system"].param.set_param_float("RTL_RETURN_ALT", 5.0)
+            print(f"[INFO] UAV-{uav_index}: Đặt độ cao RTL thành 5m thành công")
         except Exception as e:
             print(f"[ERROR] UAV-{uav_index}: Lỗi khi đặt RTL_RETURN_ALT - {e}")
         # Export parameters to file
