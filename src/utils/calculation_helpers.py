@@ -266,9 +266,6 @@ def heron_formula(a, b, c):
 
 
 # ==================================================================================================
-# Old code
-# Tu doan nay tro di la code cua mot thang ngu lol nao do code ngu vc, d biet sua the nao
-# ==================================================================================================
 def find_longest_edge2(cartesian_coords):
     """
     Find the vertices that form the longest edge in a polygon given its vertices in Cartesian coordinates.
@@ -722,6 +719,7 @@ def find_polygon_edges(positions):
     points = np.array(positions)
 
     # Calculate the convex hull
+    print(points)
     hull = ConvexHull(points)
 
     # Extract the vertices of the convex hull
@@ -866,48 +864,97 @@ def sort_polygon_vertices(vertices):
     return sorted_vertices
 
 
-def euclidean(a, b):
-    return math.hypot(a[0] - b[0], a[1] - b[1])
+def find_path(points, point_A):
+    # TÌM CẠNH CỦA ĐA GIÁC (BƯỚC NÀY TÌM ĐƯỢC GÓC CỦA ĐA GIÁC)
+    List1, List2 = find_polygon_edges(points)
 
-def angle_between(v1, v2):
-    dot = v1[0]*v2[0] + v1[1]*v2[1]
-    m1 = math.hypot(*v1); m2 = math.hypot(*v2)
-    if m1*m2 == 0: 
-        return 0.0
-    cosang = max(-1.0, min(1.0, dot/(m1*m2)))
-    return math.acos(cosang)
+    # for i, point in enumerate(List1):
+    #     print(f"{point}")
 
-def find_path(points, start, turn_threshold=math.pi/6):
-    """
-    - Đầu tiên tìm tất cả các điểm mà đi thẳng không phải đổi hướng (≤ turn_threshold).
-    - Nếu có, chọn điểm gần nhất trong nhóm đó.
-    - Nếu không có, buộc phải đổi hướng, chọn điểm gần nhất trong toàn bộ unvisited.
-    """
-    unvisited = points.copy()
-    path      = [start]
-    curr      = start
-    last_dir  = None
+    # TÌM CẠNH CỦA ĐA GIÁC (BƯỚC NÀY TÌM ĐƯỢC CÁC ĐIỂM NẰM TRÊN CẠNH ĐA GIÁC)
+    list_A, list_B = check_and_move_points(List1, List2)
 
-    while unvisited:
-        # nhóm các điểm không gây turn (góc ≤ threshold)
-        if last_dir is None:
-            candidates = unvisited[:]  # lần đầu không xét turn
-        else:
-            no_turn = []
-            for p in unvisited:
-                new_dir = (p[0]-curr[0], p[1]-curr[1])
-                if angle_between(last_dir, new_dir) <= turn_threshold:
-                    no_turn.append(p)
-            candidates = no_turn if no_turn else unvisited
+    # Sắp xếp các điểm trên cạnh của đa giác theo thứ tự
+    list_A = sort_polygon_vertices(list_A)
 
-        # trong nhóm candidates, chọn điểm gần nhất
-        best_pt = min(candidates, key=lambda p: euclidean(curr, p))
-        best_dir = (best_pt[0]-curr[0], best_pt[1]-curr[1])
+    # Sắp xếp các điểm trên cạnh của đa giác bắt đầu từ điểm gần drone nhất
+    list_A = reorder_list(point_A, list_A)
 
-        # cập nhật
-        path.append(best_pt)
-        unvisited.remove(best_pt)
-        curr     = best_pt
-        last_dir = best_dir
+    # Tách đường đi của Drone thành 2 phần, phần 1 đi từ điểm gần drone nhất đến điểm xã drone nhất theo cạnh của đa giác
+    list_A, list_B = split_at_farthest_point(point_A, list_A, list_B)
+    # phần 2 đi đường zig-zag từ điểm xa drone nhất về điểm gần drone thứ 2
 
-    return path
+    # Assuming list_2 and point_A are defined
+    # tìm đường zig-zag ngắn nhất cho phần đường đi thứ 2
+    path_list_2 = find_shortest_path(point_A, list_B.copy())
+
+    list_A.pop()  # bỏ đi điểm cuối cùng của phần thứ nhất vì trùng với điểm đầu phần thứ 2
+    list_A.extend(path_list_2)  # nối 2 phần
+
+    return list_A
+
+#HaoNV35 add 13/10/2025.
+def find_new_path(points, point_a):
+    return points
+
+def calculate_grid_size_from_hfov_and_vfov(h_fov, v_fov, uav_alt):
+    grid_width = 2 * uav_alt * math.tan(math.radians(h_fov / 2)) 
+    grid_height = 2 * uav_alt * math.tan(math.radians(v_fov / 2)) 
+    return grid_width, grid_height
+
+def calculate_overlapped_grid_size(grid_width, grid_height, h_overlap, v_overlap):
+    overlapped_grid_width = grid_width - h_overlap * grid_width
+    overlapped_grid_height = grid_height - v_overlap * grid_height
+    return overlapped_grid_width, overlapped_grid_height
+
+def find_line_segment_intersection(line, segment_point1, segment_point2):
+    x1, y1 = segment_point1 
+    x2, y2 = segment_point2
+    if y1 == y2:
+        return None
+    if(y1 <= line <= y2) or (y2 <= line <= y1):
+        ratio = (line - y1) / (y2 - y1)
+        if 0 <= ratio <= 1:
+            x_line = x1 + ratio * (x2 - x1)
+            return (x_line, line)
+    return None
+
+def find_parallel_polygon_intersection(area_vertices, spacing, number_of_lines):
+    longest_edge_length, longest_edge_endpoints = find_longest_edge(area_vertices)
+    x1, y1 = longest_edge_endpoints[0]
+    x2, y2 = longest_edge_endpoints[1]
+    area_min_y = min(v[1] for v in area_vertices)
+    area_max_y = max(v[1] for v in area_vertices)
+
+    intersection_points = []
+    for i in range(-number_of_lines, number_of_lines + 1):
+        if i == 0:
+            continue
+        line = y1 + i * spacing
+        if area_min_y < line < area_max_y:
+            for j in range(len(area_vertices)):
+                x3, y3 = area_vertices[j]
+                x4, y4 = area_vertices[(j+1) % len(area_vertices)]
+                intersection = find_line_segment_intersection(line, (x3, y3), (x4, y4))
+                if intersection:
+                    intersection_points.append(intersection)
+    print("Number of intersection points:", len(intersection_points))
+
+    if intersection_points[0][1] > y1:
+        up = True
+        intersection_points.sort(key=lambda x: x[1])
+    else: 
+        up = False
+        intersection_points.sort(key=lambda x: x[1], reverse=True) # sort by y coordinat
+    print("Intersection points:", intersection_points)
+
+    segment_length = []
+    for i in range(1, len(intersection_points), 2):
+        point1 = intersection_points[i]
+        point2 = intersection_points[i-1]
+        length = np.linalg.norm(np.array(point1) - np.array(point2))
+        print("Length:", length)
+        if length > 0: 
+            segment_length.append(length)
+    print("Segment lengths:", segment_length)
+    return intersection_points, segment_length, up
