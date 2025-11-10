@@ -361,7 +361,8 @@ class Map(Interface):
     def _process_single_area(self, area_points, area_index, marker_options):
         """Process and display grid points for a single area"""
         # Find optimal path through points
-        ordered_points = find_path(area_points, self.drone_position_list[0])
+        #ordered_points = find_path(area_points, self.drone_position_list[0])
+        ordered_points = find_new_path(area_points, self.drone_position_list[0])
         ordered_points = remove_duplicate_pts(ordered_points)
 
         # Check if there are too many points

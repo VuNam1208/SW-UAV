@@ -27,7 +27,7 @@ NOW = datetime.now().strftime("%y-%m-%d_%H-%M-%S")
 DEFAULT_STREAM_SCREEN = "ovv_screen"  # Options: "general_screen", "stream_screen", "ovv_screen", "all"
 
 # Stream source configuration
-DEFAULT_STREAM_SOURCE = "videos"  # Options: "streams", "rtsp", "webcam", "videos"
+DEFAULT_STREAM_SOURCE = "rtsp"  # Options: "streams", "rtsp", "webcam", "videos"
 DEFAULT_STREAM_SIZE = (320, 180)  # Recording resolution
 DEFAULT_STREAM_FPS = 30           # Frame rate for streaming and recording
 FOURCC = "XVID"                   # Video codec for recording
