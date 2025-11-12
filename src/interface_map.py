@@ -362,7 +362,7 @@ class Map(Interface):
         """Process and display grid points for a single area"""
         # Find optimal path through points
         #ordered_points = find_path(area_points, self.drone_position_list[0])
-        ordered_points = find_new_path(area_points, self.drone_position_list[0])
+        ordered_points = best_path_sw_uav(area_points, self.drone_position_list[0])
         ordered_points = remove_duplicate_pts(ordered_points)
 
         # Check if there are too many points
@@ -1109,6 +1109,10 @@ class Map(Interface):
                 self.rescue_map.deleteMarker(key)
                 self.ovv_map.deleteMarker(key)
             self.drone_initial_positions = {}
+
+    def move_drone_markers(self, uav_index, lat, lon):
+        self.rescue_map.moveMarker(f"uav_{uav_index}", lat, lon)
+        self.ovv_map.moveMarker(f"uav_{uav_index}", lat, lon)
 
     def update_drone_positions(self):
         """

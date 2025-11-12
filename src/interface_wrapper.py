@@ -1840,6 +1840,7 @@ class App(Map, StreamQtThread, Interface, QtWidgets.QWidget):
                 self._update_uav_info_display(uav_index)
                 
                 # show on map
+                self.move_drone_markers(uav_index, latitude, longitude)
                 # self.show_drones(init=False)
                     
                 # Only process one position update per call, comment out if you want to make it continuous
