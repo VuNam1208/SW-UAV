@@ -416,7 +416,7 @@ def split_grids(rotated_area, angle, midpoint, min_lat, min_lon, grid_size, n_ar
             #HaoNV35 Start.
             grid_size = calculate_grid_size()
             # grid_points = generate_grid(points, int(distance))
-            grid_points = generate_waypoints(points, grid_size[i])
+            grid_points = generate_waypoints(points, grid_size[i], i)
             #HaoNV35 End.
 
             areas_dot.append(grid_points)
