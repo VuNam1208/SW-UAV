@@ -364,8 +364,8 @@ class C12MainWindow(QtWidgets.QMainWindow):
         central = QtWidgets.QWidget()
         self.setCentralWidget(central)
         main_v = QtWidgets.QVBoxLayout(central)
-        main_v.setContentsMargins(10, 8, 10, 10)
-        main_v.setSpacing(8)
+        main_v.setContentsMargins(0, 0, 0, 0)
+        main_v.setSpacing(0)
 
         # ===== TITLE BAR CUSTOM =====
         title_bar = QtWidgets.QFrame()
