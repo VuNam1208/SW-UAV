@@ -199,9 +199,12 @@ class Joystick(QtWidgets.QWidget):
 class C12MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle('C12 Dashboard')
-        self.resize(1100, 650)
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Window)
 
+        self.resize(900, 550)
+
+        # biến phục vụ kéo cửa sổ
+        self._drag_pos = None
         # defaults (customize these)
         self.default_ip = '192.168.144.108'
         self.default_port = 5000
@@ -225,79 +228,138 @@ class C12MainWindow(QtWidgets.QMainWindow):
 
         # giảm spam log cho joystick
         self._gam_log_counter = 0
-        
+    
     def _update_rtsp_urls(self):
         """Cập nhật URL RTSP theo IP hiện tại."""
         self.rtsp_optical = f'rtsp://{self.default_ip}:554/stream=1'
         self.rtsp_thermal = f'rtsp://{self.default_ip}:555/stream=2'
 
     def _apply_style(self):
-        self.setStyleSheet("""
+        style = """
+        /* Nền chính */
         QMainWindow {
-            background-color: #121212;
+            background-color: #1565C0;          /* blue 800 */
         }
+
+        /* Label chữ */
         QLabel {
-            color: #dddddd;
+            color: #E3F2FD;                     /* very light blue */
         }
+
+        /* Khung group box */
         QGroupBox {
-            border: 1px solid #333333;
+            background-color: rgba(255,255,255,0.05);
+            border: 1px solid #90CAF9;          /* CHÚ Ý: có 'solid' */
             border-radius: 6px;
             margin-top: 10px;
             padding-top: 12px;
             font-weight: bold;
-            color: #e0e0e0;
+            color: #E3F2FD;
         }
         QGroupBox::title {
             subcontrol-origin: margin;
             left: 8px;
             padding: 0 3px;
         }
+
+        /* Nút bấm */
         QPushButton {
-            background-color: #262626;
+            background-color: #64B5F6;          /* blue 300 */
             border-radius: 4px;
-            border: 1px solid #444444;
+            border: 1px solid #0D47A1;
             padding: 4px 8px;
-            color: #eeeeee;
+            color: #0B2540;
+            font-weight: 500;
         }
         QPushButton:hover {
-            background-color: #333333;
+            background-color: #42A5F5;
         }
         QPushButton:pressed {
-            background-color: #444444;
+            background-color: #1E88E5;
+            color: #E3F2FD;
         }
+
+        /* Ô nhập & log */
         QLineEdit, QTextEdit {
-            background-color: #1e1e1e;
-            color: #eeeeee;
+            background-color: #E3F2FD;
+            color: #0B2540;
             border-radius: 4px;
-            border: 1px solid #444444;
+            border: 1px solid #90CAF9;
         }
+
+        /* Slider */
         QSlider::groove:horizontal {
-            background: #333333;
+            background: #90CAF9;
             height: 6px;
             border-radius: 3px;
         }
         QSlider::handle:horizontal {
-            background: #66aaff;
+            background: #0D47A1;
             width: 14px;
-            margin: -4px 0;
+            margin: -4px 0px;
             border-radius: 7px;
         }
+
+        /* Tab video */
         QTabWidget::pane {
-            border: 1px solid #333333;
+            border: 1px solid #0D47A1;
             border-radius: 4px;
+            background-color: #E3F2FD;
         }
         QTabBar::tab {
-            background: #222222;
-            color: #cccccc;
+            background: #1976D2;
+            color: #E3F2FD;
             padding: 4px 10px;
             border-top-left-radius: 4px;
             border-top-right-radius: 4px;
+            min-width: 80px;
         }
         QTabBar::tab:selected {
-            background: #333333;
+            background: #E3F2FD;
+            color: #0B2540;
         }
-        """)
 
+        /* Title bar custom (frameless) */
+        QFrame#TitleBar {
+            background-color: #0D47A1;
+        }
+        QFrame#TitleBar QLabel {
+            color: #E3F2FD;
+            font-weight: bold;
+        }
+        QFrame#TitleBar QPushButton {
+            background-color: transparent;
+            border: none;
+            color: #E3F2FD;
+            font-size: 14px;
+        }
+        QFrame#TitleBar QPushButton:hover {
+            background-color: rgba(255,255,255,0.15);
+        }
+        QFrame#TitleBar QPushButton:pressed {
+            background-color: rgba(255,255,255,0.25);
+        }
+        """
+        self.setStyleSheet(style)
+
+    def mousePressEvent(self, event: QtGui.QMouseEvent):
+        # Nếu click chuột trái trong vùng title bar (cao 32px đầu tiên)
+        if event.button() == QtCore.Qt.LeftButton and event.pos().y() <= 32:
+            self._drag_pos = event.globalPos() - self.frameGeometry().topLeft()
+            event.accept()
+        else:
+            super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event: QtGui.QMouseEvent):
+        if self._drag_pos is not None and event.buttons() & QtCore.Qt.LeftButton:
+            self.move(event.globalPos() - self._drag_pos)
+            event.accept()
+        else:
+            super().mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event: QtGui.QMouseEvent):
+        self._drag_pos = None
+        super().mouseReleaseEvent(event)
     def _build_ui(self):
         central = QtWidgets.QWidget()
         self.setCentralWidget(central)
@@ -305,6 +367,32 @@ class C12MainWindow(QtWidgets.QMainWindow):
         main_v.setContentsMargins(10, 8, 10, 10)
         main_v.setSpacing(8)
 
+        # ===== TITLE BAR CUSTOM =====
+        title_bar = QtWidgets.QFrame()
+        title_bar.setObjectName("TitleBar")
+        title_bar.setFixedHeight(32)
+
+        title_layout = QtWidgets.QHBoxLayout(title_bar)
+        title_layout.setContentsMargins(10, 0, 10, 0)
+        title_layout.setSpacing(8)
+
+        self.title_label = QtWidgets.QLabel("Gimbal C12")
+        self.title_label.setAlignment(QtCore.Qt.AlignCenter)
+        title_layout.addStretch()
+        title_layout.addWidget(self.title_label)
+        title_layout.addStretch()
+
+        btn_min = QtWidgets.QPushButton("—")
+        btn_min.setFixedSize(28, 22)
+        btn_min.clicked.connect(self.showMinimized)
+        title_layout.addWidget(btn_min)
+
+        btn_close = QtWidgets.QPushButton("×")
+        btn_close.setFixedSize(28, 22)
+        btn_close.clicked.connect(self.close)
+        title_layout.addWidget(btn_close)
+
+        main_v.addWidget(title_bar)
         # -------- Connection group --------
         conn_group = QtWidgets.QGroupBox("Kết nối Video")
         main_v.addWidget(conn_group)
@@ -359,9 +447,9 @@ class C12MainWindow(QtWidgets.QMainWindow):
         opt_widget = QtWidgets.QWidget()
         opt_layout = QtWidgets.QVBoxLayout(opt_widget)
         self.lbl_opt = QtWidgets.QLabel("Optical")
-        self.lbl_opt.setMinimumSize(540, 320)
+        self.lbl_opt.setMinimumSize(320, 240)
         self.lbl_opt.setAlignment(QtCore.Qt.AlignCenter)
-        self.lbl_opt.setStyleSheet("background:#101010; color:#999999;")
+        self.lbl_opt.setStyleSheet("background:#ffffff; color:#0b2540; border:1px solid #90caf9;")
         opt_layout.addWidget(self.lbl_opt)
         self.tab_video.addTab(opt_widget, "Optical")
 
@@ -369,9 +457,9 @@ class C12MainWindow(QtWidgets.QMainWindow):
         thm_widget = QtWidgets.QWidget()
         thm_layout = QtWidgets.QVBoxLayout(thm_widget)
         self.lbl_thm = QtWidgets.QLabel("Thermal")
-        self.lbl_thm.setMinimumSize(540, 320)
+        self.lbl_thm.setMinimumSize(320, 240)
         self.lbl_thm.setAlignment(QtCore.Qt.AlignCenter)
-        self.lbl_thm.setStyleSheet("background:#101010; color:#999999;")
+        self.lbl_thm.setStyleSheet("background:#ffffff; color:#0b2540; border:1px solid #90caf9;")
         thm_layout.addWidget(self.lbl_thm)
         self.tab_video.addTab(thm_widget, "Thermal")
 
