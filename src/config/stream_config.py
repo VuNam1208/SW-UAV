@@ -73,7 +73,7 @@ elif DEFAULT_STREAM_SOURCE == "rtsp":
         "rtsp://192.168.144.22/mainStream",
         "rtsp://admin:admin@192.168.144.110:8554/main.264",
         "rtsp://admin:admin@192.168.144.70:8554/main.264",
-        "rtsp://192.168.144.60/video2",
+        "rtsp://192.168.144.108:554/stream=1",
         "rtsp://192.168.144.60/video3",
         "rtsp://192.168.144.60/video4",
     ]

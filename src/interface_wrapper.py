@@ -34,6 +34,10 @@ from utils.qt_utils import *
 from utils.serial_utils import *
 from utils.stream_utils import *
 
+
+# gimbal 
+GIMBAL_C12_PATH = os.path.join(os.path.dirname(__file__), "GimbalC12.py")
+
 # cspell: ignore UAVs mavsdk asyncqt figlet ndarray offboard pixmap qgroundcontrol rtcm imwrite dsize fourcc imread
 __version__ = "3.20.0"
 __current_time__ = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -736,13 +740,29 @@ class App(Map, StreamQtThread, Interface, QtWidgets.QWidget):
         4. If the command is a movement or gimbal control command, it parses the command and value,
            and performs the corresponding action:
            - Movement commands: "forward", "backward", "left", "right", "up", "down"
-           - Gimbal control commands: "pitch", "yaw"
+           - Gimbal control commands: "pitch", "yaw", "gimbal"
         5. Clears the input after processing the command.
         6. Displays an error message if an invalid input is encountered.
         """
         global UAVs
 
         try:
+            text = self.uav_update_commands[uav_index - 1].text()
+            if "=" not in text:
+                command = text.strip().lower()
+
+                if command == "gimbal":
+                    self.open_gimbal_c12()
+                else:
+                    self.popup_msg(
+                        f"Unknown command: {command}",
+                        src_msg="process_command",
+                        type_msg="Error",
+                    )
+
+                self.uav_update_commands[uav_index - 1].clear()
+                return
+            
             if not (
                 UAVs[uav_index]["status"]["connection_status"]
                 and UAVs[uav_index]["connection_allow"]
@@ -780,14 +800,22 @@ class App(Map, StreamQtThread, Interface, QtWidgets.QWidget):
                     await uav_fn_control_gimbal(
                         drone=UAVs[self.active_tab_index], control_value=control_value
                     )
-                # Clear the input after processing the command
-                self.uav_update_commands[uav_index - 1].clear()
 
         except Exception as e:
             self.popup_msg(
                 f"Invalid input: {repr(e)}", src_msg="process_command", type_msg="Error"
             )
-
+    # open gimbalc12...................................................................
+    def open_gimbal_c12(self):
+        """Mở cửa sổ điều khiển Gimbal C12 (file GimbalC12.py cùng thư mục)."""
+        try:
+            subprocess.Popen([sys.executable, GIMBAL_C12_PATH])
+        except Exception as e:
+            self.popup_msg(
+                f"Không mở được GimbalC12.py: {repr(e)}",
+                src_msg="open_gimbal_c12",
+                type_msg="Error",
+            )
     # -----------------------< UAV buttons callback functions >-----------------------
     async def uav_connect_callback(self, uav_index) -> None:
         """
