@@ -492,7 +492,7 @@ class StreamQtThread(QThread):
                 remaining_time = max(0, target_frame_time - elapsed_time)
                 
                 # if remaining_time > 0:
-                self.msleep(int(10))
+                self.msleep(int(1))
                 
                 # Write processed frame to video file if enabled
                 if self.stream.is_writer_opened():

@@ -124,7 +124,7 @@ class Map(Interface):
             self.ui.dateTimeEdit.setDateTime(CURRENT_TIME)
 
             # Show drones on the map
-            self.show_drones()
+            self.show_drones(init=True)
             
         except Exception as e:
             logger.error(f"Failed to initialize map: {e}")
