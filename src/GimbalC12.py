@@ -13,6 +13,7 @@ import cv2
 import numpy as np
 from typing import Optional
 
+
 # ====================== MINI SDK C12 ======================
 class C12Camera:
     def __init__(self, ip: str, port: int = 5000):
