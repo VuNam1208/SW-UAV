@@ -11,7 +11,7 @@ import math
 from PyQt5 import QtWidgets, QtGui, QtCore
 import cv2
 import numpy as np
-
+from typing import Optional
 
 # ====================== MINI SDK C12 ======================
 class C12Camera:
@@ -21,7 +21,7 @@ class C12Camera:
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.settimeout(0.3)
 
-    def set_ip(self, ip: str, port: int | None = None):
+    def set_ip(self, ip: str, port: Optional[int] = None):
         self.ip = ip
         if port is not None:
             self.port = port
