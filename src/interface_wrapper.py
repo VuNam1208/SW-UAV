@@ -901,6 +901,8 @@ class App(Map, StreamQtThread, Interface, QtWidgets.QWidget):
     async def _connect_to_system(self, uav_index):
         """Connect to the UAV system and verify connection state."""
         global UAVs
+
+        self.show_drones(init=False)
         
         logger.log(f"Waiting for UAV {uav_index} to connect...", level="info")
         

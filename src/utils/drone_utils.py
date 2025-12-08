@@ -4,6 +4,7 @@ import math
 import os
 import time
 from pathlib import Path
+import glob
 
 
 from geographiclib.geodesic import Geodesic
@@ -1117,7 +1118,8 @@ async def export_points_to_gps_log(uav_index, detected_pos, frame_shape, uav_gps
         os.makedirs(detection_dir, exist_ok=True)
 
         # Write rescue position file (currently using UAV position rather than calculated position)
-        rescue_filepath = f"{rescue_dir}/rescue_pos_uav_{uav_index}.log"
+        #rescue_filepath = f"{rescue_dir}/rescue_pos_uav_{uav_index}.log"
+        rescue_filepath = get_next_rescue_log_path(rescue_dir)
         with open(rescue_filepath, "w") as f:
             # Note: Currently using UAV position rather than calculated target position
             # This can be changed to f"{target_lat}, {target_lon}\n" to use calculated position
@@ -1126,7 +1128,10 @@ async def export_points_to_gps_log(uav_index, detected_pos, frame_shape, uav_gps
             
         # Log detection with timestamp
         time_stamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        detection_filepath = f"{detection_dir}/detection_pos_uav_{uav_index}.log"
+
+        #detection_filepath = f"{detection_dir}/detection_pos_uav_{uav_index}.log"
+        detection_filepath = get_next_detection_log_path(detection_dir)
+
         with open(detection_filepath, "a") as f:
             f.write(
                 f"{time_stamp}, {target_pixel_x}, {target_pixel_y}, "
@@ -1138,6 +1143,63 @@ async def export_points_to_gps_log(uav_index, detected_pos, frame_shape, uav_gps
     except Exception as e:
         print(f"Error exporting detection to GPS log: {repr(e)}")
 
+def get_next_rescue_log_path(rescue_dir: str) -> str:
+    """
+    Trả về path file recuse_pos_uav_X.log với X là số tăng dần.
+    Ví dụ: nếu đang có ...uav_0.log, uav_1.log, uav_2.log
+    thì hàm sẽ trả về path ...uav_3.log
+    """
+    pattern = os.path.join(rescue_dir, "rescue_pos_uav_*.log")
+    existing_files = glob.glob(pattern)
+
+    next_id = 0
+    if existing_files:
+        ids = []
+        for p in existing_files:
+            stem = Path(p).stem  # "detection_pos_uav_6"
+            parts = stem.split("_")
+            if not parts:
+                continue
+            try:
+                num = int(parts[-1])  # lấy số 6
+                ids.append(num)
+            except ValueError:
+                # nếu tên file ko đúng format thì bỏ qua
+                continue
+
+        if ids:
+            next_id = max(ids) + 1
+
+    return os.path.join(rescue_dir, f"rescue_pos_uav_{next_id}.log")
+
+def get_next_detection_log_path(detection_dir: str) -> str:
+    """
+    Trả về path file detection_pos_uav_X.log với X là số tăng dần.
+    Ví dụ: nếu đang có ...uav_0.log, uav_1.log, uav_2.log
+    thì hàm sẽ trả về path ...uav_3.log
+    """
+    pattern = os.path.join(detection_dir, "detection_pos_uav_*.log")
+    existing_files = glob.glob(pattern)
+
+    next_id = 0
+    if existing_files:
+        ids = []
+        for p in existing_files:
+            stem = Path(p).stem  # "detection_pos_uav_6"
+            parts = stem.split("_")
+            if not parts:
+                continue
+            try:
+                num = int(parts[-1])  # lấy số 6
+                ids.append(num)
+            except ValueError:
+                # nếu tên file ko đúng format thì bỏ qua
+                continue
+
+        if ids:
+            next_id = max(ids) + 1
+
+    return os.path.join(detection_dir, f"detection_pos_uav_{next_id}.log")
 
 # ! Not used
 async def uav_fn_swarm_goto(drones, txt_file_path):
