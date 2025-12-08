@@ -190,7 +190,7 @@ def draw_tracking_frame(
     frame: np.ndarray, 
     results: List[Any],
     history: Dict[int, List[Tuple[float, float]]],
-    track_frame_limit: int = 12,
+    track_frame_limit: int = 15,
     class_names: Dict[int, str] = COCO_CLASSES,
     target_class: str = "person",
 ) -> Tuple[np.ndarray, List[int], List[Dict[str, Any]]]:
@@ -208,7 +208,6 @@ def draw_tracking_frame(
     Returns:
         Tuple of (annotated frame, track IDs, objects information)
     """
-    track_frame_limit = 5
     # Initialize return values
     boxes, track_ids, objects = [], [], []
     detected = False
