@@ -2290,9 +2290,11 @@ class App(Map, StreamQtThread, Interface, QtWidgets.QWidget):
             # Skip if not a detected person
             if not obj["detected"] or obj["class"] != "person":
                 continue
+            # Disable detection feature after finding a target
             await UAVs[uav_index]["system"].mission.pause_mission()
             await UAVs[uav_index]["system"].action.hold()  
-            UAVs[uav_index]["detection_enable"] = False             
+            UAVs[uav_index]["detection_enable"] = False 
+
             # Get UAV position and frame information
             frame_shape = annotated_frame.shape
             detected_pos = (obj["x"], obj["y"])
@@ -2318,13 +2320,12 @@ class App(Map, StreamQtThread, Interface, QtWidgets.QWidget):
             
             # Log detection to terminal
             asyncio.create_task(self._log_detection(uav_index, obj["class"], detected_pos, frame_shape, uav_gps))
-            
 
-            
-            # Disable detection feature after finding a target
-            #await asyncio.sleep(5)
-            #UAVs[uav_index]["detection_enable"] = True
-            #UAVs[uav_index]["system"].mission.start_mission()
+            await asyncio.sleep(1)
+            UAVs[uav_index]["system"].mission.start_mission()
+            await asyncio.sleep(5)
+            UAVs[uav_index]["detection_enable"] = True
+
             
             # Only process the first detected person
             break
@@ -2416,11 +2417,11 @@ class App(Map, StreamQtThread, Interface, QtWidgets.QWidget):
 
                 # NOTE: you can implement your own logic here
                 # get the detected UAVs
-                detected_uav_list = []
+                #detected_uav_list = []
                 for rescue_filepath in rescue_filepaths:
                     uav_index = int(str(Path(rescue_filepath).stem).split("_")[-1])
                     print(f"Detected UAV: {uav_index}")
-                    detected_uav_list.append(UAVs[uav_index])
+                    #detected_uav_list.append(UAVs[uav_index])
                 
                 # get the rescue filepath
                 
@@ -2440,9 +2441,9 @@ class App(Map, StreamQtThread, Interface, QtWidgets.QWidget):
                 await asyncio.sleep(1)
                 #asyncio.create_task(self.send_coordinate()) #tu dong gui tin nhan
                 await UAVs[RESCUE_UAV_INDEX]["system"].action.arm()
-                await asyncio.sleep(1)
+                await asyncio.sleep(3)
                 await UAVs[RESCUE_UAV_INDEX]["system"].action.takeoff()
-                await asyncio.sleep(8)
+                await asyncio.sleep(10)
                                
                 logger.log(
                     f"UAV-{RESCUE_UAV_INDEX} -- Takeoff completed, ready to start rescue mission", level="info"
@@ -2457,7 +2458,7 @@ class App(Map, StreamQtThread, Interface, QtWidgets.QWidget):
                 # 2 UAV Rescue do the rescue mission and the detected drones goes into suspend mode
                 UAVs[RESCUE_UAV_INDEX]["status"]["on_mission"] = True
                 await asyncio.gather(
-                    uav_suspend_missions(drones=detected_uav_list, suspend_time=30),
+                    #uav_suspend_missions(drones=detected_uav_list, suspend_time=30),
                     uav_rescue_process(UAVs[RESCUE_UAV_INDEX], rescue_filepath, self)
                     # uav_rescue_process(
                     #     drone=UAVs[RESCUE_UAV_INDEX], rescue_filepath=rescue_filepath, self
