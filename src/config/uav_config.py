@@ -31,7 +31,7 @@ RESCUE_UAV_INDEX = 6  # Index of the UAV designated for rescue missions
 # Initial positions for all UAVs
 INIT_LON = 8.545594545594  # Initial longitude
 INIT_LAT = 47.397823397823  # Initial latitude
-INIT_ALT = [13, 6, 7, 8, 9, 3]  # Initial altitudes for each UAV (meters)
+INIT_ALT = [13, 13, 13, 13, 13, 8]  # Initial altitudes for each UAV (meters)
 
 # -------------------------------- FLIGHT PARAMETERS --------------------------------
 # Overwrite parameters for each UAV
@@ -40,39 +40,39 @@ OVERWRITE_PARAMS = {
         "MIS_TAKEOFF_ALT": 13,    # Take-off altitude (m)
         "MPC_TKO_SPEED": 2,      # Takeoff climb rate (m/s)
         "GND_SPEED_MAX": 2,      # Maximum ground speed (m/s)
-        "CURRENT_SPEED": 2,      # Current speed during mission (m/s)
+        "CURRENT_SPEED": 3,      # Current speed during mission (m/s)
         "RTL_AFTER_MS": True,    # Return to launch after mission
     },
     2: {
-        "MIS_TAKEOFF_ALT": 6,    # Take-off altitude (m)
+        "MIS_TAKEOFF_ALT": 13,    # Take-off altitude (m)
         "MPC_TKO_SPEED": 2,      # Takeoff climb rate (m/s)
         "GND_SPEED_MAX": 2,      # Maximum ground speed (m/s)
-        "CURRENT_SPEED": 2,      # Current speed during mission (m/s)
+        "CURRENT_SPEED": 3,      # Current speed during mission (m/s)
         "RTL_AFTER_MS": True,    # Return to launch after mission
     },
     3: {
-        "MIS_TAKEOFF_ALT": 7,    # Take-off altitude (m)
+        "MIS_TAKEOFF_ALT": 13,    # Take-off altitude (m)
         "MPC_TKO_SPEED": 2,      # Takeoff climb rate (m/s)
         "GND_SPEED_MAX": 2,      # Maximum ground speed (m/s)
-        "CURRENT_SPEED": 2,      # Current speed during mission (m/s)
+        "CURRENT_SPEED": 3,      # Current speed during mission (m/s)
         "RTL_AFTER_MS": True,    # Return to launch after mission
     },
     4: {
-        "MIS_TAKEOFF_ALT": 8,    # Take-off altitude (m)
+        "MIS_TAKEOFF_ALT": 13,    # Take-off altitude (m)
         "MPC_TKO_SPEED": 2,      # Takeoff climb rate (m/s)
         "GND_SPEED_MAX": 2,      # Maximum ground speed (m/s)
-        "CURRENT_SPEED": 2,      # Current speed during mission (m/s)
+        "CURRENT_SPEED": 3,      # Current speed during mission (m/s)
         "RTL_AFTER_MS": True,    # Return to launch after mission
     },
     5: {
-        "MIS_TAKEOFF_ALT": 9,    # Take-off altitude (m)
+        "MIS_TAKEOFF_ALT": 13,    # Take-off altitude (m)
         "MPC_TKO_SPEED": 2,      # Takeoff climb rate (m/s)
         "GND_SPEED_MAX": 2,      # Maximum ground speed (m/s)
-        "CURRENT_SPEED": 2,      # Current speed during mission (m/s)
+        "CURRENT_SPEED": 3,      # Current speed during mission (m/s)
         "RTL_AFTER_MS": True,    # Return to launch after mission
     },
     6: {
-        "MIS_TAKEOFF_ALT": 3,   # Take-off altitude (m)
+        "MIS_TAKEOFF_ALT": 8,   # Take-off altitude (m)
         "MPC_TKO_SPEED": 2,      # Takeoff climb rate (m/s)
         "GND_SPEED_MAX": 3,      # Maximum ground speed (m/s)
         "CURRENT_SPEED": 20,    # Current speed during mission (m/s)
@@ -130,9 +130,9 @@ else:  # Real mode uses serial connections
     # NOTE: Adjust these values to match actual hardware connections
     PROTOCOLS = [DEFAULT_PROTOCOL] * MAX_UAV_COUNT
     SERVER_HOSTS = [
-        "/dev/ttyACM2",
         "/dev/ttyACM0",
         "/dev/ttyACM1",
+        "/dev/ttyACM2",
         "/dev/ttyACM3",
         "/dev/ttyACM4",
         "/dev/ttyUSB0",

@@ -27,7 +27,7 @@ NOW = datetime.now().strftime("%y-%m-%d_%H-%M-%S")
 DEFAULT_STREAM_SCREEN = "stream_screen"  # Options: "general_screen", "stream_screen", "ovv_screen", "all"
 
 # Stream source configuration
-DEFAULT_STREAM_SOURCE = "videos"  # Options: "streams", "rtsp", "webcam", "videos"
+DEFAULT_STREAM_SOURCE = "rtsp"  # Options: "streams", "rtsp", "webcam", "videos"
 DEFAULT_STREAM_SIZE = (320, 180)  # Recording resolution
 DEFAULT_STREAM_FPS = 30           # Frame rate for streaming and recording
 FOURCC = "XVID"                   # Video codec for recording
@@ -70,12 +70,12 @@ elif DEFAULT_STREAM_SOURCE == "videos":
     ]
 elif DEFAULT_STREAM_SOURCE == "rtsp":
     DEFAULT_STREAM_VIDEO_PATHS = [
-        "rtsp://192.168.144.22/mainStream",
-        "rtsp://admin:admin@192.168.144.110:8554/main.264",
+        "rtsp://192.168.144.110:554/stream=1",
+        "rtsp://192.168.144.108:554/stream=1",
         "rtsp://admin:admin@192.168.144.70:8554/main.264",
         "rtsp://192.168.144.108:554/stream=1",
         "rtsp://192.168.144.60/video3",
-        "rtsp://192.168.144.60/video4",
+        "rtsp://192.168.144.111:554/stream=1",
     ]
 elif DEFAULT_STREAM_SOURCE == "webcam":
     DEFAULT_STREAM_VIDEO_PATHS = [f"/dev/video{i}" for i in range(0, MAX_UAV_COUNT)]
