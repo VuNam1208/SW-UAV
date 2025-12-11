@@ -207,7 +207,7 @@ class C12MainWindow(QtWidgets.QMainWindow):
         # biến phục vụ kéo cửa sổ
         self._drag_pos = None
         # defaults (customize these)
-        self.default_ip = '192.168.144.108'
+        self.default_ip = '192.168.144.110'
         self.default_port = 5000
         self._update_rtsp_urls()
 

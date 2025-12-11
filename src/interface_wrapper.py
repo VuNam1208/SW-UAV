@@ -2292,7 +2292,7 @@ class App(Map, StreamQtThread, Interface, QtWidgets.QWidget):
                 continue
             # Disable detection feature after finding a target
             await UAVs[uav_index]["system"].mission.pause_mission()
-            await UAVs[uav_index]["system"].action.hold()  
+            #await UAVs[uav_index]["system"].action.hold()  
             UAVs[uav_index]["detection_enable"] = False 
 
             # Get UAV position and frame information
@@ -2323,7 +2323,7 @@ class App(Map, StreamQtThread, Interface, QtWidgets.QWidget):
 
             await asyncio.sleep(1)
             UAVs[uav_index]["system"].mission.start_mission()
-            await asyncio.sleep(5)
+            await asyncio.sleep(25)
             UAVs[uav_index]["detection_enable"] = True
 
             
